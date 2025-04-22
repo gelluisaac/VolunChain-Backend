@@ -1,23 +1,30 @@
-# Use the official Node.js image as the base
+# Usa la imagen oficial de Node.js
 FROM node:18
 
-# Set the working directory inside the container
+# Instala el cliente de PostgreSQL para que pg_isready esté disponible
+RUN apt-get update && apt-get install -y postgresql-client
+
+# Establece el directorio de trabajo
 WORKDIR /app
 
-# Copy npm configuration files
+# Copia solo los archivos de dependencias primero para optimizar la caché
 COPY package*.json ./
 
-# Install dependencies
+# Instala las dependencias
 RUN npm install
 
-# Copy the rest of the code
+# Copia el resto del código
 COPY . .
 
-# Generate the Prisma client (ensures it's ready to run migrations)
+# Copia y da permisos al entrypoint
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
+# Genera el cliente de Prisma
 RUN npx prisma generate
 
-# Expose port 3000 in the container
+# Expone el puerto 3000
 EXPOSE 3000
 
-# Command to run the application in development mode
-CMD ["npm", "run", "dev"]
+# Usa el entrypoint en lugar de CMD
+ENTRYPOINT ["/app/entrypoint.sh"]

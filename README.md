@@ -2,7 +2,7 @@
 
 **Innovating Volunteering with Blockchain 🚀**
 
-VolunChain is a blockchain-powered platform that connects volunteers with organizations in a transparent, decentralized, and efficient way. Our mission is to make volunteering more accessible, secure, and rewarding for everyone.
+VolunChain is a blockchain-powered platform that connects volunteers with organizations in a transparent, decentralized, and efficient way. Our mission is to make volunteering more accessible, secure, and rewarding for everyone .
 
 ---
 
@@ -31,6 +31,49 @@ Your support helps us grow and motivates us to continue improving VolunChain. �
 - **Blockchain:** Stellar, Rust.
 - **Database:** PostgreSQL, Prisma.
 - **Containers:** Docker for consistent environments.
+- **Architecture:** Domain-Driven Design (DDD)
+
+---
+
+## 🏗️ Project Structure
+
+The project follows Domain-Driven Design principles with the following structure:
+
+```
+src/
+├── modules/
+│   └── project/
+│       ├── domain/           # Domain entities and value objects
+│       ├── repositories/     # Repository interfaces and implementations
+│       ├── use-cases/        # Application business logic
+│       └── dto/             # Data Transfer Objects
+├── shared/                  # Shared kernel
+└── infrastructure/          # External services and implementations
+```
+
+### Domain Layer
+
+- Contains business entities and value objects
+- Implements domain logic and business rules
+- Independent of external concerns
+
+### Repository Layer
+
+- Defines interfaces for data access
+- Implements data persistence logic
+- Abstracts database operations
+
+### Use Cases Layer
+
+- Implements application business logic
+- Orchestrates domain objects
+- Handles transaction boundaries
+
+### DTO Layer
+
+- Defines data structures for API communication
+- Handles data validation and transformation
+- Separates domain models from API contracts
 
 ---
 
@@ -110,8 +153,33 @@ Follow these steps to set up the backend locally:
 
 ## 📄 License
 
-This project is licensed under the [MIT License](./LICENSE).
+This project is licensed under the [MIT License](https://opensource.org/license/mit).
 
 ---
 
 ## 🎉 Empowering Volunteerism, One Block at a Time.
+
+## Rate Limiting Configuration
+
+The application implements rate limiting to protect sensitive endpoints and prevent abuse.
+
+### Configuration
+
+Rate limiting can be configured via environment variables:
+
+- `RATE_LIMIT_WINDOW_MS`: Time window for rate limiting in milliseconds (default: 15 minutes)
+- `RATE_LIMIT_MAX_REQUESTS`: Maximum number of requests allowed in the time window (default: 100)
+- `RATE_LIMIT_MESSAGE`: Custom message when rate limit is exceeded
+
+### Protected Endpoints
+
+The following endpoints have rate limiting:
+
+- `/auth/login`
+- `/auth/register`
+- Wallet verification endpoints
+- Email-related endpoints
+
+### Customization
+
+You can adjust rate limit settings in your `.env` file or use the default configurations.

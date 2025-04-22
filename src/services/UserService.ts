@@ -1,55 +1,45 @@
-import { PrismaClient } from "@prisma/client";
+import { CreateUserDto } from "../modules/user/dto/CreateUserDto";
+import {
+  CreateUserUseCase,
+  DeleteUserUseCase,
+  GetUserByEmailUseCase,
+  GetUserByIdUseCase,
+  GetUsersUseCase,
+  UpdateUserUseCase,
+} from "../modules/user/use-cases/userUseCase";
+import { UpdateUserDto } from "../modules/user/dto/UpdateUserDto";
+import { PrismaUserRepository } from "../modules/user/repositories/PrismaUserRepository";
+export class UserService {
+  private userRepository = new PrismaUserRepository();
+  private createUserUseCase = new CreateUserUseCase(this.userRepository);
+  private GetUserByIdUseCase = new GetUserByIdUseCase(this.userRepository);
+  private GetUserByEmailUseCase = new GetUserByEmailUseCase(
+    this.userRepository
+  );
+  private GetUsersUseCase = new GetUsersUseCase(this.userRepository);
+  private DeleteUserUseCase = new DeleteUserUseCase(this.userRepository);
+  private UpdateUserUseCase = new UpdateUserUseCase(this.userRepository);
 
-const prisma = new PrismaClient();
-
-class UserService {
-  async createUser(
-    name: string,
-    lastName: string,
-    email: string,
-    password: string,
-    wallet: string
-  ) {
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) throw new Error("Email already exists");
-
-    return await prisma.user.create({
-      data: { name, lastName, email, password, wallet },
-    });
+  async createUser(data: CreateUserDto) {
+    return this.createUserUseCase.execute(data);
   }
 
   async getUserById(id: string) {
-    return await prisma.user.findUnique({ where: { id } });
+    return this.GetUserByIdUseCase.execute(id);
   }
 
   async getUserByEmail(email: string) {
-    return await prisma.user.findUnique({ where: { email } });
+    return this.GetUserByEmailUseCase.execute(email);
   }
 
   async getUsers(page: number = 1, pageSize: number = 10) {
-    const skip = (page - 1) * pageSize;
+    return this.GetUsersUseCase.execute(page, pageSize);
+  }
+  async deleteUser(id: string): Promise<void> {
+    return this.DeleteUserUseCase.execute(id);
+  }
 
-    const [users, total] = await Promise.all([
-      prisma.user.findMany({
-        skip,
-        take: pageSize,
-        orderBy: {
-          createdAt: "desc",
-        },
-      }),
-      prisma.user.count(),
-    ]);
-
-    return {
-      users,
-      pagination: {
-        total,
-        page,
-        pageSize,
-        totalPages: Math.ceil(total / pageSize),
-      },
-    };
+  async updateUser(data: UpdateUserDto): Promise<void> {
+    return this.UpdateUserUseCase.execute(data);
   }
 }
-
-export default UserService;

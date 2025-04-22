@@ -1,26 +1,21 @@
+import { CreateUserDto } from "../modules/user/dto/CreateUserDto";
+import { UserService } from "../services/UserService";
 import { Request, Response } from "express";
-import UserService from "../services/UserService";
 
 class UserController {
   private userService = new UserService();
 
   async createUser(req: Request, res: Response): Promise<void> {
     try {
-      const { name, lastName, email, password, wallet } = req.body;
-      const user = await this.userService.createUser(
-        name,
-        lastName,
-        email,
-        password,
-        wallet
-      );
+      const userDto = new CreateUserDto();
+      Object.assign(userDto, req.body);
+
+      const user = await this.userService.createUser(userDto);
       res.status(201).json(user);
     } catch (error: unknown) {
-      res
-        .status(400)
-        .json({
-          error: error instanceof Error ? error.message : "Unknown error",
-        });
+      res.status(400).json({
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
     }
   }
 
@@ -34,11 +29,9 @@ class UserController {
       }
       res.status(200).json(user);
     } catch (error: unknown) {
-      res
-        .status(400)
-        .json({
-          error: error instanceof Error ? error.message : "Unknown error",
-        });
+      res.status(400).json({
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
     }
   }
 
@@ -56,11 +49,9 @@ class UserController {
       }
       res.status(200).json(user);
     } catch (error: unknown) {
-      res
-        .status(400)
-        .json({
-          error: error instanceof Error ? error.message : "Unknown error",
-        });
+      res.status(400).json({
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
     }
   }
 }
